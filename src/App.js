@@ -1,26 +1,39 @@
-import React from 'react';
-import logo from './logo.svg';
+import React, { useEffect } from 'react';
 import './App.css';
+import { Messenger } from './pages/main/Messenger';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
+import { Login } from './pages/login/Login';
+import { firebaseConfig } from './api/fbConfig';
+import firebase from 'firebase/app';
+import { useDispatch } from 'react-redux';
+import { onAuthStateChanged } from './features/auth/reducer';
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+
+firebase.initializeApp(firebaseConfig);
+
+
+export const App = () => {
+    const dispatch = useDispatch();
+
+    useEffect(() => {
+        dispatch(onAuthStateChanged());
+    }, [dispatch]);
+
+    return (
+        <Router>
+            <div className="App">
+                <Switch>
+                    <Route path='/login'>
+                        <Login />
+                    </Route>
+                    <Route exact path='/:chatId?'>
+                        <Messenger />
+                    </Route>
+                    <Route>
+                        You just hit the route that doesn't exist... the sadness
+                    </Route>
+                </Switch>
+            </div>
+        </Router>
+    );
 }
-
-export default App;

@@ -1,0 +1,13 @@
+.link {
+    display: block;
+    text-decoration: none;
+    color: inherit;
+}
+
+.link:hover {
+    background: rgb(233, 233, 233);
+}
+
+.activeLink {
+    background-color: rgb(147, 147, 255);
+}
