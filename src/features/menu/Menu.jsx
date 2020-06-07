@@ -9,10 +9,9 @@ export const Menu = () => {
     const {
         currentUser: {
             photoURL,
-            displayName,
+            name,
             email,
             uid
-            //emailVerified
         },
         isAuth
     } = useSelector(state => state.auth)
@@ -21,10 +20,10 @@ export const Menu = () => {
     const classes = useStyles();
 
     useEffect(() => {
-        if (!!displayName && !!uid) {
-            writeUserInfo(displayName, email, photoURL, uid);
+        if (!!name && !!uid) {
+            writeUserInfo(name, email, photoURL, uid);
         }
-    },[email, displayName, photoURL, uid]);
+    }, [email, name, photoURL, uid]);
 
     const handleClick = () => {
         dispatch(signOut());
@@ -35,7 +34,7 @@ export const Menu = () => {
             <Avatar src={photoURL} />
             <ListItem>
                 <ListItemText
-                    primary={displayName} secondary={email}
+                    primary={name} secondary={email}
                     classes={{
                         primary: classes.primaryText
                     }} />

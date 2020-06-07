@@ -53,7 +53,7 @@ export const onAuthStateChanged = () => dispatch => {
                 const { photoURL, displayName, email, emailVerified, uid } = user;
                 dispatch(setCurrentUser({
                     photoURL,
-                    displayName,
+                    name: displayName,
                     email,
                     emailVerified,
                     uid
