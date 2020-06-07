@@ -1,0 +1,9 @@
+.messagesWrap {
+    width: 100%;
+    height: calc(100% - 65px);
+}
+
+.inputWrap {
+    border-top: 1px solid gray;
+    height: 60px;
+}

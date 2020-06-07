@@ -8,48 +8,7 @@ import styles from './styles.module.css';
 
 
 const channels = [
-    {
-        channelId: 1,
-        channelName: 'Nunenaaado',
-        channelAvatar: null,
-        newMessagesCount: 1
-    },
-    {
-        channelId: 2,
-        channelName: 'tawerka',
-        channelAvatar: null,
-        newMessagesCount: 5
-    },
-    {
-        channelId: 3,
-        channelName: 'Dimon',
-        channelAvatar: null,
-        newMessagesCount: 8
-    },
-    {
-        channelId: 4,
-        channelName: 'Way of samurai',
-        channelAvatar: null,
-        newMessagesCount: null
-    },
-    {
-        channelId: 5,
-        channelName: 'Ylylyk',
-        channelAvatar: null,
-        newMessagesCount: 1
-    },
-    {
-        channelId: 6,
-        channelName: 'Bakirov',
-        channelAvatar: null,
-        newMessagesCount: 23
-    },
-    {
-        channelId: 7,
-        channelName: 'Мякиш',
-        channelAvatar: null,
-        newMessagesCount: 1
-    }
+
 ];
 
 export const ChannelsList = () => {
@@ -64,17 +23,17 @@ export const ChannelsList = () => {
     return <List>
         {channelsList.map(channel =>
             <NavLink
-                to={channel.channelName}
-                key={channel.channelId}
+                to={channel.uid}
+                key={channel.uid}
                 className={styles.link}
                 activeClassName={styles.activeLink}
             >
                 <ListItem>
                     <ListItemAvatar>
-                        <Avatar />
+                        <Avatar src={channel.photoURL}/>
                     </ListItemAvatar>
                     <ListItemText>
-                        {channel.channelName}
+                        {channel.name}
                     </ListItemText>
                     <Badge badgeContent={channel.newMessagesCount} color='secondary' />
                 </ListItem>

@@ -9,5 +9,5 @@ export const authAPI = {
         return auth().signInWithPopup(provider);
     },
     signOut: () => auth().signOut(),
-    onAuthStateChanged: callback => auth().onAuthStateChanged(callback)
+    onAuthStateChanged: listener => auth().onAuthStateChanged(listener)
 }

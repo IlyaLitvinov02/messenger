@@ -1,14 +1,9 @@
+import { getUsersByTerm } from "../../api/database";
+
 const SET_CHANNELS_LIST = 'channels/reducer/SET_CHANNELS_LIST';
 
 const initialState = {
-    channelsList: [
-        // {
-        //     channellId: null,
-        //     channelName: null,
-        //     channelAvatar: null,
-        //     newMessagesCount: null
-        // }
-    ]
+    channelsList: []
 }
 
 export const reducer = (state = initialState, action) => {
@@ -24,3 +19,14 @@ export const reducer = (state = initialState, action) => {
 }
 
 export const setChannelsList = channelsList => ({ type: SET_CHANNELS_LIST, payload: { channelsList } });
+
+
+export const searchUsers = term => async dispatch => {
+    const snapshot = await getUsersByTerm(term);
+    const list = [];
+    snapshot.forEach(snapshotChild => {
+        list.push(snapshotChild.val());
+    });
+    dispatch(setChannelsList(list));
+} 
+

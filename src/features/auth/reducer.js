@@ -48,6 +48,7 @@ export const signOut = () => async dispatch => {
 export const onAuthStateChanged = () => dispatch => {
     try {
         authAPI.onAuthStateChanged(user => {
+            console.log(user);
             if (user) {
                 const { photoURL, displayName, email, emailVerified, uid } = user;
                 dispatch(setCurrentUser({
