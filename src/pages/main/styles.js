@@ -54,7 +54,7 @@ export const useStyles = makeStyles((theme) => ({
 
     content: {
         height: `calc(100% - ${drawerHeaderHeight + appBarHeight + 1}px)`,
-        position: 'absolute',
+        position: 'fixed',
         width: '98%',
         [theme.breakpoints.up('sm')]: {
             width: `calc(100% - ${drawerWidth}px)`,

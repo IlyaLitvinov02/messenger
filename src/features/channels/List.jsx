@@ -13,7 +13,7 @@ import {
     Snackbar,
 } from '@material-ui/core';
 import MuiAlert from '@material-ui/lab/Alert';
-import MoreHorizIcon from '@material-ui/icons/MoreHoriz';
+import PersonAddIcon from '@material-ui/icons/PersonAdd';
 import { NavLink } from 'react-router-dom';
 import styles from './styles.module.css';
 
@@ -42,7 +42,7 @@ const Item = ({
             &&
             <ListItemSecondaryAction>
                 <Fab size='small' onClick={onClick}>
-                    <MoreHorizIcon color='primary' fontSize='small' />
+                    <PersonAddIcon color='primary' fontSize='small' />
                 </Fab>
             </ListItemSecondaryAction>}
     </ListItem>
@@ -56,6 +56,11 @@ export const ChannelsList = () => {
     const error = useSelector(state => state.channels.error);
     const authUserInfo = useSelector(state => state.auth.currentUser)
 
+    useEffect(() => {
+        dispatch(getMyChats())
+    }, [dispatch]);
+
+    
     const handleClick = userInfo => {
         dispatch(createChat(authUserInfo, userInfo));
     }
@@ -64,9 +69,6 @@ export const ChannelsList = () => {
         dispatch(setError(undefined));
     }
 
-    useEffect(() => {
-        dispatch(getMyChats())
-    }, [dispatch]);
 
     return <List>
         <Snackbar

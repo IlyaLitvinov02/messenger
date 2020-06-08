@@ -1,6 +1,6 @@
 import firebase from 'firebase/app';
 import 'firebase/database';
-
+import 'firebase/auth';
 
 
 export const writeUserInfo = (name, email, photoURL, uid) => {
@@ -60,23 +60,8 @@ export const createChatInfo = (firstUser, secondUser) => {
 }
 
 
-export const subscribeOnMyChats = observer => {
+export const subscribeOnChats = observer => {
   const currentUserId = firebase.auth().currentUser.uid;
   return firebase.database().ref(`/users/${currentUserId}/chats`).on('value', observer);
 }
 
-
-export const addMessage = (chatId, senderId, receiverId, messageBody) => {
-  const database = firebase.database();
-  const firstRef = database.ref(`users/${senderId}/messages/${chatId}`);
-  const secondRef = database.ref(`users/${receiverId}/messages/${chatId}`);
-
-  const message = {
-    body: messageBody,
-    senderId
-  }
-
-  const newMessageKey = firstRef.push().key;
-  firstRef.update({ [newMessageKey]: message });
-  secondRef.update({ [newMessageKey]: message });
-}

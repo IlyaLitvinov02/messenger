@@ -1,4 +1,4 @@
-import { getUsersByTerm, createChatInfo, subscribeOnMyChats } from "../../api/database";
+import { getUsersByTerm, createChatInfo, subscribeOnChats } from "../../api/database";
 
 const SET_CHANNELS_LIST = 'channels/reducer/SET_CHANNELS_LIST';
 const SET_ERROR = 'channels/reducer/SET_ERROR'
@@ -47,7 +47,7 @@ export const createChat = (firstUser, secondUser) => dispatch => {
 }
 
 export const getMyChats = () => dispatch => {
-    subscribeOnMyChats(snapshot => {
+    subscribeOnChats(snapshot => {
         const list = [];
         snapshot.forEach(snapshotChild => {
             const value = snapshotChild.val()
