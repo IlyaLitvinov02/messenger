@@ -2,11 +2,11 @@ import React, { useState } from 'react';
 import { TextField, IconButton } from '@material-ui/core';
 import SearchIcon from '@material-ui/icons/Search';
 import { useDispatch } from 'react-redux';
-import { searchUsers } from './reducer';
+import { searchUsers, setSearchMode } from './reducer';
 
 export const SearchBar = () => {
     const [searchTerm, setSearchTerm] = useState('');
-    const dispacth = useDispatch();
+    const dispatch = useDispatch();
 
 
     const handleChange = ({ target: { value } }) => {
@@ -14,7 +14,8 @@ export const SearchBar = () => {
     }
 
     const handleClick = () => {
-        dispacth(searchUsers(searchTerm));
+        dispatch(searchUsers(searchTerm));
+        dispatch(setSearchMode(true))
     }
 
     return (

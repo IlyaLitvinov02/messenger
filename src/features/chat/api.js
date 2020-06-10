@@ -5,14 +5,15 @@ import 'firebase/auth';
 
 
 export const messagesAPI = {
-    addMessage: (chatId, senderId, receiverId, messageBody) => {
+    addMessage: (chatId, receiverId, messageBody) => {
         const database = firebase.database();
-        const firstRef = database.ref(`users/${senderId}/messages/${chatId}`);
+        const currentUserId = firebase.auth().currentUser.uid;
+        const firstRef = database.ref(`users/${currentUserId}/messages/${chatId}`);
         const secondRef = database.ref(`users/${receiverId}/messages/${chatId}`);
 
         const message = {
             body: messageBody,
-            senderId
+            senderId: currentUserId
         }
 
         const newMessageKey = firstRef.push().key;
@@ -20,12 +21,12 @@ export const messagesAPI = {
         secondRef.update({ [newMessageKey]: message });
     },
 
-    subscribeOnMessages: (chatId, observer) => {
+    subscribeOnMessages(chatId, observer) {
         const currentUserId = firebase.auth().currentUser.uid;
         return firebase.database().ref(`/users/${currentUserId}/messages/${chatId}`).on('value', observer);
     },
 
-    unsubscribeOffMessages: (chatId) => {
+    unsubscribeOffMessages(chatId) {
         const currentUserId = firebase.auth().currentUser.uid;
         return firebase.database().ref(`/users/${currentUserId}/messages/${chatId}`).off('value');
     }

@@ -7,7 +7,7 @@ import { Redirect } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { Menu } from '../../features/menu/Menu';
 import { Chat } from '../../features/chat/Chat';
-import { SearchBar } from '../../features/channels/SearchBar';
+import { SearchBar } from '../../features/search/SearchBar';
 import { ChatHeader } from '../../features/chat/components/ChatHeader';
 
 

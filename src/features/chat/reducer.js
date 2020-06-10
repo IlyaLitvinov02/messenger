@@ -1,4 +1,5 @@
 import { messagesAPI } from "./api";
+import { increaseNewMessagesCount, updateLastMessageAndTimestamp } from "../channels/reducer";
 
 const SET_MESSAGES = 'chat/reducer/SET_MESSAGES';
 const SET_CURRENT_CHAT = 'chat/reducer/SET_CURRENT_CHAT';
@@ -27,12 +28,15 @@ export const setMessages = messages => ({ type: SET_MESSAGES, payload: { message
 export const setCurrentChat = currentChat => ({ type: SET_CURRENT_CHAT, payload: { currentChat } });
 
 
-export const sendMessage = (chatId, senderId, receiverId, messageBody) => dispatch => {
-    messagesAPI.addMessage(chatId, senderId, receiverId, messageBody);
+export const sendMessage = (chatId, receiverId, messageBody) => dispatch => {
+    messagesAPI.addMessage(chatId, receiverId, messageBody);
+    dispatch(increaseNewMessagesCount(chatId, receiverId))
+    dispatch(updateLastMessageAndTimestamp(chatId, receiverId, messageBody));
 }
 
 export const subscribeOnMessages = chatId => dispatch => {
     messagesAPI.subscribeOnMessages(chatId, snapshot => {
+        console.log('subscribed on messages');
         const list = [];
         snapshot.forEach(snapshotChild => {
             const value = snapshotChild.val();
@@ -46,5 +50,6 @@ export const subscribeOnMessages = chatId => dispatch => {
 }
 
 export const unsubscribeOffMessages = chatId => dispatch => {
+    console.log('unsubscribed off messages');
     messagesAPI.unsubscribeOffMessages(chatId);
 }

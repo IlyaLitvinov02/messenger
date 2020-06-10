@@ -13,7 +13,6 @@ import { useStyles } from './styles';
 
 
 export const MessagesInput = () => {
-    const currentUserId = useSelector(state => state.auth.currentUser.uid);
     const companionId = useSelector(state => state.chat.currentChat.companionId);
     const dispatch = useDispatch();
     const { chatId } = useParams();
@@ -24,7 +23,7 @@ export const MessagesInput = () => {
 
 
     const handleClick = () => {
-        dispatch(sendMessage(chatId, currentUserId, companionId, newMessageBody));
+        dispatch(sendMessage(chatId, companionId, newMessageBody));
         setNewMessageBody('');
     }
 

@@ -1,4 +1,4 @@
-import { getUsersByTerm, createChatInfo, subscribeOnChats } from "../../api/database";
+import { chatsAPI } from "./api";
 
 const SET_CHANNELS_LIST = 'channels/reducer/SET_CHANNELS_LIST';
 const SET_ERROR = 'channels/reducer/SET_ERROR'
@@ -25,29 +25,18 @@ export const reducer = (state = initialState, action) => {
 export const setChannelsList = channelsList => ({ type: SET_CHANNELS_LIST, payload: { channelsList } });
 export const setError = error => ({ type: SET_ERROR, payload: { error } });
 
-export const searchUsers = term => async dispatch => {
-    try {
-        const snapshot = await getUsersByTerm(term);
-        const list = [];
-        snapshot.forEach(snapshotChild => {
-            list.push(snapshotChild.val());
-        });
-        dispatch(setChannelsList(list));
-    } catch (error) {
-        console.log(error);
-    }
-}
 
 export const createChat = (firstUser, secondUser) => dispatch => {
     try {
-        createChatInfo(firstUser, secondUser);
+        chatsAPI.createChatInfo(firstUser, secondUser);
     } catch (error) {
         dispatch(setError( error.message ));
     }
 }
 
-export const getMyChats = () => dispatch => {
-    subscribeOnChats(snapshot => {
+export const subscribeOnChats = () => dispatch => {
+    console.log('subscribe on chats');
+    chatsAPI.subscribeOnChats(snapshot => {
         const list = [];
         snapshot.forEach(snapshotChild => {
             const value = snapshotChild.val()
@@ -59,4 +48,21 @@ export const getMyChats = () => dispatch => {
         });
         dispatch(setChannelsList(list));
     });
+}
+
+export const unsubscribeOffChats = () => dispacth => {
+    console.log('unsubscribe off chats');
+    chatsAPI.unsubscribeOffChats();
+}
+
+export const updateLastMessageAndTimestamp = (chatId, receiverId, messageBody) => dispatch => {
+    chatsAPI.updateLastMessageAndTimestamp(chatId, receiverId, messageBody);
+}
+
+export const increaseNewMessagesCount = (chatId, receiverId) => dispatch => {
+    chatsAPI.increaseNewMessagesCount(chatId, receiverId);
+}
+
+export const resetNewMessagesCount = chatId => dispatch => {
+    chatsAPI.resetNewMessagesCount(chatId);
 }

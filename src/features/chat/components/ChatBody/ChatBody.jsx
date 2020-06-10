@@ -3,15 +3,14 @@ import { subscribeOnMessages, unsubscribeOffMessages } from '../../reducer';
 import { animateScroll as scroll, } from 'react-scroll'
 import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
-import styles from '../../styles.module.css';
+import styles from './styles.module.css';
 import {
-    Chip,
     Avatar,
     ListItem,
     ListItemAvatar,
     ListItemText
 } from '@material-ui/core';
-import { useStyles } from './styles';
+import { resetNewMessagesCount } from '../../../channels/reducer';
 
 
 
@@ -24,7 +23,7 @@ export const ChatBody = () => {
     const messages = useSelector(state => state.chat.messages);
     const { chatId } = useParams();
     const dispatch = useDispatch();
-    const classes = useStyles();
+
 
     useEffect(() => {
         if (chatId) {
@@ -36,6 +35,10 @@ export const ChatBody = () => {
     }, [chatId, dispatch]);
 
     useEffect(() => {
+        dispatch(resetNewMessagesCount(chatId));
+    });
+
+    useEffect(() => {
         scroll.scrollToBottom({ containerId: 'scrollContainer', duration: 200 });
     });
 
@@ -43,7 +46,7 @@ export const ChatBody = () => {
 
     return (
         <div className={styles.messagesWrap} id='scrollContainer'>
-            {messages && messages.map(message =>
+            {messages.map(message =>
                 <ListItem key={message.messageId}>
                     {message.senderId === currentUserId
                         ? <>
@@ -51,7 +54,9 @@ export const ChatBody = () => {
                                 <Avatar src={currentUserPhotoURL} />
                             </ListItemAvatar>
                             <ListItemText>
-                                <Chip label={message.body} className={classes.message} />
+                                <div className={`${styles.message} ${styles.filled}`}>
+                                    {message.body}
+                                </div>
                             </ListItemText>
                         </>
                         : <>
@@ -59,7 +64,9 @@ export const ChatBody = () => {
                                 <Avatar src={companionPhotoURL} />
                             </ListItemAvatar>
                             <ListItemText>
-                                <Chip variant="outlined" label={message.body} className={classes.message} />
+                                <div className={`${styles.message} ${styles.outlined}`}>
+                                    {message.body}
+                                </div>
                             </ListItemText>
                         </>
                     }
