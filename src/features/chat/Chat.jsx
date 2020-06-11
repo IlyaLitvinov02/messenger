@@ -3,7 +3,7 @@ import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import { ChatBody } from './components/ChatBody/ChatBody';
 import { setCurrentChat } from './reducer';
-import { MessagesInput } from './components/MessagesInput/MessagesInput';
+import { MessagesForm } from './components/MessagesForm/MessagesForm';
 import { Chip } from '@material-ui/core';
 import styles from './styles.module.css';
 
@@ -24,7 +24,7 @@ export const Chat = () => {
         currentChatId
             ? <>
                 <ChatBody />
-                <MessagesInput />
+                <MessagesForm />
             </>
             : <div className={styles.selectChatMessage}>
                 <Chip label='Please, select chat to start messaging' />

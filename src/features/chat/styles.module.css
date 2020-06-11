@@ -1,6 +1,5 @@
 .inputWrap {
-    border-top: 1px solid gray;
-    height: 60px;
+    border-top: 1px solid rgb(196, 196, 196);
 }
 
 .selectChatMessage {

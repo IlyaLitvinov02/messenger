@@ -41,12 +41,16 @@ export const chatsAPI = {
 
     subscribeOnChats(observer) {
         const currentUserId = firebase.auth().currentUser.uid;
-        return firebase.database().ref(`/users/${currentUserId}/chats`).orderByChild('timestamp').on('value', observer);
+        return firebase.database()
+            .ref(`/users/${currentUserId}/chats`)
+            .orderByChild('timestamp')
+            .on('value', observer);
     },
 
-    unsubscribeOffChats() {
-        const currentUserId = firebase.auth().currentUser.uid;
-        return firebase.database().ref(`/users/${currentUserId}/chats`).off('value');
+    unsubscribeOffChats(currentUserId) {
+        return firebase.database()
+            .ref(`/users/${currentUserId}/chats`)
+            .off('value');
     },
 
     updateLastMessageAndTimestamp(chatId, receiverId, messageBody) {
@@ -56,10 +60,10 @@ export const chatsAPI = {
         const timestamp = Date.now()
 
         database.ref('users/').update({
-            [`${currentUserId}/chats/${chatId}/lastMessage`]: 'You: ' + messageBody,
+            [`${currentUserId}/chats/${chatId}/lastMessage`]: `You: ${messageBody ? messageBody : 'Photo'}`,
             [`${currentUserId}/chats/${chatId}/timestamp`]: timestamp,
 
-            [`${receiverId}/chats/${chatId}/lastMessage`]: messageBody,
+            [`${receiverId}/chats/${chatId}/lastMessage`]: messageBody || 'Photo',
             [`${receiverId}/chats/${chatId}/timestamp`]: timestamp
         });
     },
@@ -76,7 +80,7 @@ export const chatsAPI = {
     resetNewMessagesCount(chatId) {
         const database = firebase.database();
         const currentUserId = firebase.auth().currentUser.uid;
-        
+
         //reset my newMessagesCount to 0
         database
             .ref(`users/${currentUserId}/chats/${chatId}/newMessagesCount`)

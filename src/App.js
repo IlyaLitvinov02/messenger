@@ -7,6 +7,7 @@ import { firebaseConfig } from './api/fbConfig';
 import firebase from 'firebase/app';
 import { useDispatch } from 'react-redux';
 import { onAuthStateChanged } from './features/auth/reducer';
+import { Signup } from './pages/Signup';
 
 
 firebase.initializeApp(firebaseConfig);
@@ -25,6 +26,9 @@ export const App = () => {
                 <Switch>
                     <Route path='/login'>
                         <Login />
+                    </Route>
+                    <Route path='/signup'>
+                        <Signup />
                     </Route>
                     <Route exact path='/:chatId?'>
                         <Messenger />

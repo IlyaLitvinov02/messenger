@@ -5,51 +5,21 @@ import {
     List,
     ListItem,
     ListItemText,
-    ListItemAvatar,
-    Avatar,
-    Badge,
-    Fab,
-    ListItemSecondaryAction,
     Snackbar,
     ListItemIcon,
     IconButton,
 } from '@material-ui/core';
 import MuiAlert from '@material-ui/lab/Alert';
-import PersonAddIcon from '@material-ui/icons/PersonAdd';
 import { NavLink } from 'react-router-dom';
 import styles from './styles.module.css';
 import ArrowBackIcon from '@material-ui/icons/ArrowBackIos';
 import { setSearchMode } from '../search/reducer';
+import { Item } from './components/Item';
 
 const Alert = props => <MuiAlert elevation={6} variant="filled" {...props} />
 
 
 
-const Item = ({
-    chatId,
-    photoURL,
-    lastMessage,
-    email,
-    newMessagesCount,
-    name,
-    onClick
-}) => <ListItem>
-        <ListItemAvatar>
-            <Avatar src={photoURL} />
-        </ListItemAvatar>
-        <ListItemText primary={name} secondary={lastMessage || email} />
-        {newMessagesCount
-            ?
-            <Badge badgeContent={newMessagesCount} color='secondary' />
-            :
-            !chatId
-            &&
-            <ListItemSecondaryAction>
-                <Fab size='small' onClick={onClick}>
-                    <PersonAddIcon color='primary' fontSize='small' />
-                </Fab>
-            </ListItemSecondaryAction>}
-    </ListItem>
 
 
 
@@ -59,17 +29,17 @@ export const ChannelsList = () => {
     const channelsList = useSelector(state => state.channels.channelsList);
     const error = useSelector(state => state.channels.error);
     const authUserInfo = useSelector(state => state.auth.currentUser);
+    const currentUserId = authUserInfo.uid;
     const { searchMode, searchResults } = useSelector(state => state.search);
-
 
     useEffect(() => {
         if (!searchMode) {
             dispatch(subscribeOnChats());
             return () => {
-                dispatch(unsubscribeOffChats());
+                dispatch(unsubscribeOffChats(currentUserId));
             }
         }
-    }, [searchMode, dispatch]);
+    }, [searchMode, currentUserId, dispatch]);
 
 
     const handleClick = userInfo => {
@@ -128,7 +98,7 @@ export const ChannelsList = () => {
                             newMessagesCount={channel.newMessagesCount}
                             name={channel.name} />
                     </NavLink>
-                )
+                ).reverse()
             }
         </List>
     );

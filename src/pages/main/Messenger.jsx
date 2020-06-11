@@ -7,7 +7,7 @@ import { Redirect } from 'react-router-dom';
 import { useSelector } from 'react-redux';
 import { Menu } from '../../features/menu/Menu';
 import { Chat } from '../../features/chat/Chat';
-import { SearchBar } from '../../features/search/SearchBar';
+import { SearchForm } from '../../features/search/SearchForm';
 import { ChatHeader } from '../../features/chat/components/ChatHeader';
 
 
@@ -38,7 +38,7 @@ export const Messenger = () => {
                         }}
                     >
                         <div className={classes.drawerHeader}>
-                            <SearchBar />
+                            <SearchForm />
                         </div>
                         <Divider />
                         <ChannelsList />
@@ -53,7 +53,7 @@ export const Messenger = () => {
                         open
                     >
                         <div className={classes.drawerHeader}>
-                            <SearchBar />
+                            <SearchForm />
                         </div>
                         <Divider />
                         <ChannelsList />

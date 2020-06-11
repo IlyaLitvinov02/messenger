@@ -8,19 +8,20 @@ import {
     ListItemAvatar,
     ListItemText,
 } from '@material-ui/core';
-import { Redirect } from 'react-router-dom';
+import { Redirect, NavLink } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { signIn } from '../../features/auth/reducer';
+import { signIn, signInWithGoogle } from '../../features/auth/reducer';
+import { LoginForm } from '../../features/auth/LoginForm';
 
 
 
 export const Login = () => {
     const dispatch = useDispatch();
     const isAuth = useSelector(state => state.auth.isAuth);
-    
+
 
     const handleClick = () => {
-        dispatch(signIn());
+        dispatch(signInWithGoogle());
     }
 
 
@@ -31,6 +32,7 @@ export const Login = () => {
                 Sign in
             </DialogTitle>
             <List>
+                <LoginForm />
                 <ListItem button onClick={() => { handleClick() }}>
                     <ListItemAvatar>
                         <Avatar style={{ backgroundColor: "#eee" }}>
@@ -45,6 +47,11 @@ export const Login = () => {
                         Sign in with Google
                     </ListItemText>
                 </ListItem>
+                <NavLink to='/signup'>
+                    <ListItem button>
+                        <ListItemText>Sign up</ListItemText>
+                    </ListItem>
+                </NavLink>
             </List>
         </Dialog>
     );

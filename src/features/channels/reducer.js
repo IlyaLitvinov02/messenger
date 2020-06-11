@@ -50,9 +50,9 @@ export const subscribeOnChats = () => dispatch => {
     });
 }
 
-export const unsubscribeOffChats = () => dispacth => {
+export const unsubscribeOffChats = (currentUserId) => dispacth => {
     console.log('unsubscribe off chats');
-    chatsAPI.unsubscribeOffChats();
+    chatsAPI.unsubscribeOffChats(currentUserId);
 }
 
 export const updateLastMessageAndTimestamp = (chatId, receiverId, messageBody) => dispatch => {

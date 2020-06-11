@@ -28,9 +28,29 @@ export const setCurrentUser = user => ({ type: SET_CURRENT_USER, payload: { curr
 export const setIsAuth = isAuth => ({ type: SET_IS_AUTH, payload: { isAuth } });
 
 
-export const signIn = () => dispatch => {
+export const signInWithGoogle = () => async dispatch => {
     try {
-        authAPI.signIn()
+        await authAPI.signInWithGoogle()
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+
+
+
+export const signUp = (email, password) => async dispatch => {
+    try {
+        await authAPI.signUp(email, password);
+    } catch (error) {
+        console.log(error);
+    }
+}
+
+
+export const signIn = (email, password) => async dispatch => {
+    try {
+        await authAPI.signIn(email, password);
     } catch (error) {
         console.log(error);
     }
@@ -64,4 +84,9 @@ export const onAuthStateChanged = () => dispatch => {
     } catch (error) {
         console.log(error);
     }
+}
+
+export const updateUserName = name => async dispatch => {
+    const response = await authAPI.updateUserName(name);
+    console.log(response);
 }

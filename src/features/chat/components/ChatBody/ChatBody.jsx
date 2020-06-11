@@ -4,14 +4,21 @@ import { animateScroll as scroll, } from 'react-scroll'
 import { useParams } from 'react-router-dom';
 import { useDispatch, useSelector } from 'react-redux';
 import styles from './styles.module.css';
-import {
-    Avatar,
-    ListItem,
-    ListItemAvatar,
-    ListItemText
-} from '@material-ui/core';
+import { ListItem, List, ListSubheader, Chip } from '@material-ui/core';
 import { resetNewMessagesCount } from '../../../channels/reducer';
+import { Message } from './components/Message';
+import moment from "moment";
 
+
+
+const groupByDate = array => [{}, ...array].reduce((obj, item) => {
+    const date = moment(new Date(item.timestamp)).format('MMMM D');
+    const objDay = obj[date] ? obj[date] : [];
+    return {
+        ...obj,
+        [date]: [...objDay, item]
+    };
+});
 
 
 export const ChatBody = () => {
@@ -24,15 +31,14 @@ export const ChatBody = () => {
     const { chatId } = useParams();
     const dispatch = useDispatch();
 
-
     useEffect(() => {
         if (chatId) {
             dispatch(subscribeOnMessages(chatId));
             return () => {
-                dispatch(unsubscribeOffMessages(chatId));
+                dispatch(unsubscribeOffMessages(chatId, currentUserId));
             }
         }
-    }, [chatId, dispatch]);
+    }, [chatId, currentUserId, dispatch]);
 
     useEffect(() => {
         dispatch(resetNewMessagesCount(chatId));
@@ -42,36 +48,36 @@ export const ChatBody = () => {
         scroll.scrollToBottom({ containerId: 'scrollContainer', duration: 200 });
     });
 
-
+    const messagesObject = groupByDate(messages);
+    const messagesObjectKeys = Object.keys(messagesObject);
 
     return (
         <div className={styles.messagesWrap} id='scrollContainer'>
-            {messages.map(message =>
-                <ListItem key={message.messageId}>
-                    {message.senderId === currentUserId
-                        ? <>
-                            <ListItemAvatar>
-                                <Avatar src={currentUserPhotoURL} />
-                            </ListItemAvatar>
-                            <ListItemText>
-                                <div className={`${styles.message} ${styles.filled}`}>
-                                    {message.body}
-                                </div>
-                            </ListItemText>
-                        </>
-                        : <>
-                            <ListItemAvatar>
-                                <Avatar src={companionPhotoURL} />
-                            </ListItemAvatar>
-                            <ListItemText>
-                                <div className={`${styles.message} ${styles.outlined}`}>
-                                    {message.body}
-                                </div>
-                            </ListItemText>
-                        </>
-                    }
-                </ListItem>
+            {messagesObjectKeys.map(key =>
+                <List key={key}>
+                    <ListSubheader classes={{root: styles.subheader}}>
+                        <Chip label={key} />
+                    </ListSubheader>
+                    {messagesObject[key].map(message =>
+                        <ListItem key={message.messageId}>
+                            <Message
+                                variant={
+                                    message.senderId === currentUserId
+                                        ? 'filled'
+                                        : 'outlined'
+                                }
+                                avatarURL={
+                                    message.senderId === currentUserId
+                                        ? currentUserPhotoURL
+                                        : companionPhotoURL
+                                }
+                                imageURL={message.imageUrl}
+                                body={message.body}
+                                timestamp={message.timestamp} />
+                        </ListItem>
+                    )}
+                </List>
             )}
-        </div>
+        </div >
     );
 } 
