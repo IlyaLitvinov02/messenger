@@ -9,7 +9,7 @@ import { useForm } from 'react-hook-form';
 
 
 export const SearchForm = () => {
-    const { register, handleSubmit, errors } = useForm();
+    const { register, handleSubmit } = useForm();
     const dispatch = useDispatch();
 
     const onSubmit = ({ search }) => {

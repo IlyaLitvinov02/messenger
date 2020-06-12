@@ -1,4 +1,5 @@
 import { getUsersByTerm } from './api';
+import { setError } from '../../reducers/errorReducer';
 
 
 const SET_SEARCH_MODE = 'search/reducer/SET_SEARCH_MODE';
@@ -11,7 +12,7 @@ const initialState = {
 }
 
 
-export const reducer = (state = initialState, action) => {
+export const searchReducer = (state = initialState, action) => {
     switch (action.type) {
         case SET_SEARCH_MODE:
         case SET_SEARCH_RESULTS:
@@ -37,6 +38,6 @@ export const searchUsers = term => async dispatch => {
         });
         dispatch(setSearchResults(results));
     } catch (error) {
-        console.log(error);
+        dispatch(setError(error.message));
     }
 }

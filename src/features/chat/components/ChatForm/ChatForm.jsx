@@ -17,7 +17,7 @@ import { useForm } from 'react-hook-form';
 
 
 
-export const MessagesForm = () => {
+export const ChatForm = () => {
     const companionId = useSelector(state => state.chat.currentChat.companionId);
     const isImageUploading = useSelector(state => state.chat.isImageUploading);
     const dispatch = useDispatch();
@@ -35,9 +35,11 @@ export const MessagesForm = () => {
     }
 
     const onSubmit = async ({ message }) => {
-        const result = await dispatch(sendMessage(chatId, companionId, message, image));
-        reset(result);
-        setImage(undefined)
+        if (message || image) {
+            const result = await dispatch(sendMessage(chatId, companionId, message, image));
+            reset(result);
+            setImage(undefined)
+        }
     }
 
     return (

@@ -1,7 +1,13 @@
-import { authAPI } from "./api";
+import { authAPI, updateUserInfo } from "./api/auth";
+import { setError } from '../../reducers/errorReducer';
+import { uploadUserPhoto } from "./api/storage";
+
+
 
 const SET_CURRENT_USER = 'auth/reducer/SET_CURRENT_USER';
 const SET_IS_AUTH = 'auth/reducer/SET_IS_AUTH';
+const SET_USER_NAME = 'auth/reducer/SET_USER_NAME';
+const SET_USER_PHOTO_URL = 'auth/reducer/SET_USER_PHOTO_URL'
 
 
 const initialState = {
@@ -9,13 +15,22 @@ const initialState = {
     isAuth: false
 }
 
-export const reducer = (state = initialState, action) => {
+export const authReducer = (state = initialState, action) => {
     switch (action.type) {
         case SET_IS_AUTH:
         case SET_CURRENT_USER:
             return {
                 ...state,
                 ...action.payload
+            };
+        case SET_USER_NAME:
+        case SET_USER_PHOTO_URL:
+            return {
+                ...state,
+                currentUser: {
+                    ...state.currentUser,
+                    ...action.payload
+                }
             };
         default:
             return state;
@@ -26,13 +41,15 @@ export const reducer = (state = initialState, action) => {
 
 export const setCurrentUser = user => ({ type: SET_CURRENT_USER, payload: { currentUser: user } });
 export const setIsAuth = isAuth => ({ type: SET_IS_AUTH, payload: { isAuth } });
+export const setUserName = name => ({ type: SET_USER_NAME, payload: { name } });
+export const setUserPhotoURL = photoURL => ({ type: SET_USER_PHOTO_URL, payload: { photoURL } });
 
 
 export const signInWithGoogle = () => async dispatch => {
     try {
         await authAPI.signInWithGoogle()
     } catch (error) {
-        console.log(error);
+        dispatch(setError(error.message));
     }
 }
 
@@ -41,18 +58,19 @@ export const signInWithGoogle = () => async dispatch => {
 
 export const signUp = (email, password) => async dispatch => {
     try {
-        await authAPI.signUp(email, password);
+        const response = await authAPI.signUp(email, password);
+        if (response && response.user) return 'success';
     } catch (error) {
-        console.log(error);
+        dispatch(setError(error.message));
     }
 }
 
 
-export const signIn = (email, password) => async dispatch => {
+export const signIn = (email, password) => dispatch => {
     try {
-        await authAPI.signIn(email, password);
+        authAPI.signIn(email, password);
     } catch (error) {
-        console.log(error);
+        dispatch(setError(error.message));
     }
 }
 
@@ -61,14 +79,13 @@ export const signOut = () => async dispatch => {
         await authAPI.signOut();
         dispatch(setIsAuth(false));
     } catch (error) {
-        console.log(error);
+        dispatch(setError(error.message));
     }
 }
 
 export const onAuthStateChanged = () => dispatch => {
     try {
-        authAPI.onAuthStateChanged(user => {
-            console.log(user);
+        authAPI.onAuthStateChanged(async user => {
             if (user) {
                 const { photoURL, displayName, email, emailVerified, uid } = user;
                 dispatch(setCurrentUser({
@@ -82,11 +99,41 @@ export const onAuthStateChanged = () => dispatch => {
             }
         });
     } catch (error) {
-        console.log(error);
+        dispatch(setError(error.message));
     }
 }
 
-export const updateUserName = name => async dispatch => {
-    const response = await authAPI.updateUserName(name);
-    console.log(response);
+export const updateUserName = name => dispatch => {
+    try {
+        authAPI.updateUserName(name).then(() => {
+            dispatch(setUserName(name));
+        });
+    } catch (error) {
+        dispatch(setError(error.message));
+    }
+}
+
+export const updateUserPhoto = photo => async dispatch => {
+    try {
+        if (photo.type.split('/')[0] === 'image') {
+            const response = await uploadUserPhoto(photo);
+            if (response.state === 'success') {
+                const photoURL = await response.ref.getDownloadURL();
+                await authAPI.updateUserPhoto(photoURL);
+                dispatch(setUserPhotoURL(photoURL));
+            }
+        } else {
+            throw new Error('Invalid file type');
+        }
+    } catch (error) {
+        dispatch(setError(error.message));
+    }
+}
+
+export const updateCurrentUserInfo = (email, uid, name, photoURL) => dispatch => {
+    try {
+        updateUserInfo(email, uid, name, photoURL);
+    } catch (error) {
+        dispatch(setError(error.message));
+    }
 }

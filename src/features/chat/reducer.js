@@ -1,6 +1,7 @@
 import { messagesAPI } from "./api/database";
 import { increaseNewMessagesCount, updateLastMessageAndTimestamp } from "../channels/reducer";
 import { uploadMessageImage } from "./api/storage";
+import { setError } from "../../reducers/errorReducer";
 
 
 const SET_MESSAGES = 'chat/reducer/SET_MESSAGES';
@@ -14,7 +15,7 @@ const initialState = {
 }
 
 
-export const reducer = (state = initialState, action) => {
+export const chatReducer = (state = initialState, action) => {
     switch (action.type) {
         case SET_CURRENT_CHAT:
         case SET_MESSAGES:
@@ -34,37 +35,47 @@ export const setIsImageUploading = isImageUploading => ({ type: SET_IS_IMAGE_UPL
 
 
 export const sendMessage = (chatId, receiverId, messageBody, image) => async dispatch => {
-    if (image !== undefined) {
-        dispatch(setIsImageUploading(true));
-        const response = await uploadMessageImage(image, chatId);
-        if (response.state === 'success') {
-            const imageUrl = await response.ref.getDownloadURL();
-            messagesAPI.addMessage(chatId, receiverId, messageBody, imageUrl);
+    try {
+        if (image !== undefined) {
+            dispatch(setIsImageUploading(true));
+            const response = await uploadMessageImage(image, chatId);
+            if (response.state === 'success') {
+                const imageUrl = await response.ref.getDownloadURL();
+                messagesAPI.addMessage(chatId, receiverId, messageBody, imageUrl);
+            }
+            dispatch(setIsImageUploading(false))
+        } else {
+            messagesAPI.addMessage(chatId, receiverId, messageBody);
         }
-        dispatch(setIsImageUploading(false))
-    } else {
-        messagesAPI.addMessage(chatId, receiverId, messageBody);
+        dispatch(increaseNewMessagesCount(chatId, receiverId))
+        dispatch(updateLastMessageAndTimestamp(chatId, receiverId, messageBody));
+    } catch (error) {
+        dispatch(setError(error.message));
     }
-    dispatch(increaseNewMessagesCount(chatId, receiverId))
-    dispatch(updateLastMessageAndTimestamp(chatId, receiverId, messageBody));
 }
 
 export const subscribeOnMessages = chatId => dispatch => {
-    messagesAPI.subscribeOnMessages(chatId, snapshot => {
-        console.log('subscribed on messages');
-        const list = [];
-        snapshot.forEach(snapshotChild => {
-            const value = snapshotChild.val();
-            list.push({
-                ...value,
-                messageId: snapshotChild.key
-            })
+    try {
+        messagesAPI.subscribeOnMessages(chatId, snapshot => {
+            const list = [];
+            snapshot.forEach(snapshotChild => {
+                const value = snapshotChild.val();
+                list.push({
+                    ...value,
+                    messageId: snapshotChild.key
+                })
+            });
+            dispatch(setMessages(list));
         });
-        dispatch(setMessages(list));
-    });
+    } catch (error) {
+        dispatch(setError(error.message));
+    }
 }
 
 export const unsubscribeOffMessages = (chatId, uid) => dispatch => {
-    console.log('unsubscribed off messages');
-    messagesAPI.unsubscribeOffMessages(chatId, uid);
+    try {
+        messagesAPI.unsubscribeOffMessages(chatId, uid);
+    } catch (error) {
+        dispatch(setError(error.message));
+    }
 }

@@ -1,5 +1,7 @@
 import firebase from 'firebase/app';
 import 'firebase/auth';
+import 'firebase/database';
+
 
 const auth = firebase.auth;
 
@@ -31,3 +33,17 @@ export const authAPI = {
 
     onAuthStateChanged: listener => auth().onAuthStateChanged(listener),
 }
+
+
+export const updateUserInfo = (email, uid, name, photoURL) => {
+    const ref = firebase.database().ref();
+  
+    return ref.child('usersInfo').update({
+      [uid]: {
+        email,
+        name,
+        photoURL,
+        uid
+      }
+    });
+  }

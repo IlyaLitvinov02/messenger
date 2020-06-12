@@ -1,18 +1,16 @@
 import { chatsAPI } from "./api";
+import { setError } from '../../reducers/errorReducer';
 
 const SET_CHANNELS_LIST = 'channels/reducer/SET_CHANNELS_LIST';
-const SET_ERROR = 'channels/reducer/SET_ERROR'
 
 
 const initialState = {
     channelsList: [],
-    error: undefined
 }
 
-export const reducer = (state = initialState, action) => {
+export const channelsReducer = (state = initialState, action) => {
     switch (action.type) {
         case SET_CHANNELS_LIST:
-        case SET_ERROR:
             return {
                 ...state,
                 ...action.payload
@@ -23,19 +21,18 @@ export const reducer = (state = initialState, action) => {
 }
 
 export const setChannelsList = channelsList => ({ type: SET_CHANNELS_LIST, payload: { channelsList } });
-export const setError = error => ({ type: SET_ERROR, payload: { error } });
 
 
 export const createChat = (firstUser, secondUser) => dispatch => {
     try {
         chatsAPI.createChatInfo(firstUser, secondUser);
     } catch (error) {
-        dispatch(setError( error.message ));
+        dispatch(setError(error.message));
     }
+
 }
 
 export const subscribeOnChats = () => dispatch => {
-    console.log('subscribe on chats');
     chatsAPI.subscribeOnChats(snapshot => {
         const list = [];
         snapshot.forEach(snapshotChild => {
@@ -50,8 +47,7 @@ export const subscribeOnChats = () => dispatch => {
     });
 }
 
-export const unsubscribeOffChats = (currentUserId) => dispacth => {
-    console.log('unsubscribe off chats');
+export const unsubscribeOffChats = currentUserId => dispacth => {
     chatsAPI.unsubscribeOffChats(currentUserId);
 }
 

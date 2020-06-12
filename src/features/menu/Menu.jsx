@@ -1,9 +1,8 @@
-import React, { useEffect } from 'react';
-import { ListItem, ListItemText, Avatar, Button } from '@material-ui/core';
+import React from 'react';
+import { ListItem, ListItemText, Avatar, Button, IconButton, ListItemAvatar, Tooltip } from '@material-ui/core';
 import { useDispatch, useSelector } from 'react-redux';
-import { signOut } from '../auth/reducer';
+import { signOut, updateUserPhoto } from '../auth/reducer';
 import { useStyles } from './styles';
-import { writeUserInfo } from '../../api/database';
 
 export const Menu = () => {
     const {
@@ -11,7 +10,6 @@ export const Menu = () => {
             photoURL,
             name,
             email,
-            uid
         },
         isAuth
     } = useSelector(state => state.auth)
@@ -19,20 +17,36 @@ export const Menu = () => {
 
     const classes = useStyles();
 
-    useEffect(() => {
-        if (!!name && !!uid) {
-            writeUserInfo(name, email, photoURL, uid);
-        }
-    }, [email, name, photoURL, uid]);
 
     const handleClick = () => {
         dispatch(signOut());
     }
 
+    const handleFileChange = ({ target }) => {
+        const uploadFile = target.files[0];
+        dispatch(updateUserPhoto(uploadFile));
+    }
+
+
     return (
         <>
-            <Avatar src={photoURL} />
             <ListItem>
+                <ListItemAvatar>
+                    <Tooltip
+                        title='Update avatar'
+                        classes={{ tooltip: classes.customSizeTooltip }}
+                        arrow
+                    >
+                        <IconButton component='label'>
+                            <Avatar src={photoURL} />
+                            <input
+                                type="file"
+                                accept="image/*"
+                                style={{ display: 'none' }}
+                                onChange={handleFileChange} />
+                        </IconButton>
+                    </Tooltip>
+                </ListItemAvatar>
                 <ListItemText
                     primary={name} secondary={email}
                     classes={{

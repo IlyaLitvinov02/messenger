@@ -1,5 +1,5 @@
 import React from 'react';
-import { ListItemAvatar, ListItemText, Avatar, ListItemSecondaryAction } from '@material-ui/core';
+import { ListItemAvatar, ListItemText, Avatar } from '@material-ui/core';
 import styles from '../styles.module.css';
 import moment from "moment";
 

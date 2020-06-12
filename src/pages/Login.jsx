@@ -10,8 +10,8 @@ import {
 } from '@material-ui/core';
 import { Redirect, NavLink } from 'react-router-dom';
 import { useSelector, useDispatch } from 'react-redux';
-import { signIn, signInWithGoogle } from '../../features/auth/reducer';
-import { LoginForm } from '../../features/auth/LoginForm';
+import { signInWithGoogle } from '../features/auth/reducer';
+import { LoginForm } from '../features/auth/LoginForm';
 
 
 
@@ -25,7 +25,7 @@ export const Login = () => {
     }
 
 
-    if (isAuth) return <Redirect to='/' />
+    if (isAuth) return <Redirect to='/main' />
     return (
         <Dialog open>
             <DialogTitle>

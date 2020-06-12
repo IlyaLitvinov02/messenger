@@ -1,77 +1,74 @@
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Button, TextField, ListItem } from '@material-ui/core';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import { signUp, updateUserName } from './reducer';
+import { Redirect } from 'react-router-dom';
 
 export const SignupForm = () => {
+    const isAuth = useSelector(state => state.auth.isAuth);
     const { handleSubmit, register, errors } = useForm();
     const dispatch = useDispatch();
     const [step, setStep] = useState(0);
 
-    const onSubmit = async ({ email, password, name }) => {
-        // switch (step) {
-        //     case 0:
-                await dispatch(signUp(email, password));
-        //         setStep(1);
-        //     case 1:
-        //         await dispatch(updateUserName(name));
-        //         setStep(2)
-        //     default:
-        //         throw new Error();
-        // }
+    const onSignUp = async ({ email, password }) => {
+        const result = await dispatch(signUp(email, password));
+        if (result === 'success') setStep(1);
     }
+
+    const onSubmit = ({name}) => {
+        dispatch(updateUserName(name));
+        setStep(2);
+    }
+    
 
 
     return (
-        <form onSubmit={handleSubmit(onSubmit)}>
-            {step === 0
-                ? <>
+        step === 0
+            ? <form onSubmit={handleSubmit(onSignUp)}>
+                <ListItem>
+                    <TextField
+                        label='Email'
+                        name='email'
+                        type='email'
+                        inputRef={register({ required: true })}
+                        variant="outlined"
+                        error={!!errors.email}
+                        helperText='Email is required' />
+                </ListItem>
+                <ListItem>
+                    <TextField
+                        label='Password'
+                        name='password'
+                        type='password'
+                        inputRef={register({ required: true })}
+                        variant="outlined"
+                        error={!!errors.password}
+                        helperText='Password is required' />
+                </ListItem>
+                <ListItem>
+                    <Button type='submit'>Sign up</Button>
+                </ListItem>
+            </form>
+            : step === 1
+                ? <form onSubmit={handleSubmit(onSubmit)}>
                     <ListItem>
                         <TextField
-                            label='Email'
-                            name='email'
-                            type='email'
+                            label='User name'
+                            name='name'
+                            type='text'
                             inputRef={register({ required: true })}
                             variant="outlined"
-                            error={errors.email}
-                            helperText='Email is required' />
+                            error={errors.name}
+                            helperText='User name is required' />
                     </ListItem>
                     <ListItem>
-                        <TextField
-                            label='Password'
-                            name='password'
-                            type='password'
-                            inputRef={register({ required: true })}
-                            variant="outlined"
-                            error={errors.password}
-                            helperText='Password is required' />
+                        <Button type='submit'>Submit</Button>
                     </ListItem>
-                    <ListItem>
-                        <Button type='submit'>Sign up</Button>
-                    </ListItem>
-                </>
-                : step === 1
-                    ? <>
-                        <ListItem>
-                            <TextField
-                                label='User name'
-                                name='name'
-                                type='name'
-                                inputRef={register({ required: true })}
-                                variant="outlined"
-                                error={errors.email}
-                                helperText='User name is required' />
-                        </ListItem>
-                        <ListItem>
-                            <Button type='submit'>Next step</Button>
-                        </ListItem>
-                    </>
-                    : step === 2
-                    && <ListItem>
-                        input photo
-                    </ListItem>
-            }
-        </form>
+                </form>
+                : isAuth && step === 2
+                && <Redirect to='/main' />
+
+
     );
 }

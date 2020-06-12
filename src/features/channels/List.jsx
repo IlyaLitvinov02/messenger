@@ -1,22 +1,19 @@
 import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
-import { createChat, setError, subscribeOnChats, unsubscribeOffChats } from './reducer';
+import { createChat, subscribeOnChats, unsubscribeOffChats } from './reducer';
 import {
     List,
     ListItem,
     ListItemText,
-    Snackbar,
     ListItemIcon,
     IconButton,
 } from '@material-ui/core';
-import MuiAlert from '@material-ui/lab/Alert';
 import { NavLink } from 'react-router-dom';
 import styles from './styles.module.css';
 import ArrowBackIcon from '@material-ui/icons/ArrowBackIos';
 import { setSearchMode } from '../search/reducer';
 import { Item } from './components/Item';
 
-const Alert = props => <MuiAlert elevation={6} variant="filled" {...props} />
 
 
 
@@ -27,7 +24,6 @@ const Alert = props => <MuiAlert elevation={6} variant="filled" {...props} />
 export const ChannelsList = () => {
     const dispatch = useDispatch();
     const channelsList = useSelector(state => state.channels.channelsList);
-    const error = useSelector(state => state.channels.error);
     const authUserInfo = useSelector(state => state.auth.currentUser);
     const currentUserId = authUserInfo.uid;
     const { searchMode, searchResults } = useSelector(state => state.search);
@@ -47,20 +43,9 @@ export const ChannelsList = () => {
         dispatch(setSearchMode(false))
     }
 
-    const handleClose = () => {
-        dispatch(setError(undefined));
-    }
-
 
     return (
         <List>
-            <Snackbar
-                open={!!error}
-                autoHideDuration={5000}
-                onClose={handleClose}
-            >
-                <Alert severity='error'>{error}</Alert>
-            </Snackbar>
             {searchMode
                 ? <>
                     <ListItem>
@@ -85,8 +70,9 @@ export const ChannelsList = () => {
                     )}
                 </>
                 : channelsList.map(channel =>
-                    <NavLink
-                        to={channel.chatId}
+                    channel.chatId
+                    && <NavLink
+                        to={`/main/${channel.chatId}`}
                         key={channel.chatId}
                         className={styles.link}
                         activeClassName={styles.activeLink}

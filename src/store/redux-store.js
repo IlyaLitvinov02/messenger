@@ -1,16 +1,17 @@
 import { createStore, combineReducers, applyMiddleware } from "redux";
 import thunkMiddleware from 'redux-thunk';
-import { reducer as channelsReducer } from '../features/channels/reducer';
-import { reducer as authReducer } from './../features/auth/reducer';
-import { reducer as chatReducer} from "../features/chat/reducer";
-import { reducer as searchReducer} from "../features/search/reducer";
-
+import { channelsReducer } from '../features/channels/reducer';
+import { authReducer } from './../features/auth/reducer';
+import { chatReducer } from "../features/chat/reducer";
+import { searchReducer } from "../features/search/reducer";
+import { errorReducer } from '../reducers/errorReducer'
 
 const reducers = combineReducers({
     chat: chatReducer,
     channels: channelsReducer,
     auth: authReducer,
-    search: searchReducer
+    search: searchReducer,
+    errors: errorReducer
 });
 
 export const store = createStore(reducers, applyMiddleware(thunkMiddleware));
