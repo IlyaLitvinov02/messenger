@@ -41,7 +41,7 @@ export const ChatBody = () => {
     }, [chatId, currentUserId, dispatch]);
 
     useEffect(() => {
-        dispatch(resetNewMessagesCount(chatId));
+        if (chatId) dispatch(resetNewMessagesCount(chatId));
     });
 
     useEffect(() => {
@@ -55,7 +55,7 @@ export const ChatBody = () => {
         <div className={styles.messagesWrap} id='scrollContainer'>
             {messagesObjectKeys.map(key =>
                 <List key={key}>
-                    <ListSubheader classes={{root: styles.subheader}}>
+                    <ListSubheader classes={{ root: styles.subheader }}>
                         <Chip label={key} />
                     </ListSubheader>
                     {messagesObject[key].map(message =>
