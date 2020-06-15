@@ -42,6 +42,10 @@ export const ChatForm = () => {
         }
     }
 
+    const handleKeyDown = event => {
+        if (event.ctrlKey && event.key === 'Enter') handleSubmit(onSubmit)();
+    }
+
     return (
         <div className={styles.inputWrap}>
             <form onSubmit={handleSubmit(onSubmit)}>
@@ -52,6 +56,7 @@ export const ChatForm = () => {
                         className={classes.textarea}
                         rowsMax={3}
                         placeholder='Write a message...'
+                        onKeyDown={handleKeyDown}
                     />
                     {image &&
                         <Chip label={image.name} onDelete={() => { setImage(undefined) }} />}

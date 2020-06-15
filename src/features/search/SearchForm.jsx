@@ -1,5 +1,5 @@
 import React from 'react';
-import { TextField, IconButton, ListItem } from '@material-ui/core';
+import { TextField, IconButton, ListItem, Tooltip } from '@material-ui/core';
 import SearchIcon from '@material-ui/icons/Search';
 import { useDispatch } from 'react-redux';
 import { searchUsers, setSearchMode } from './reducer';
@@ -20,11 +20,16 @@ export const SearchForm = () => {
     return (
         <form onSubmit={handleSubmit(onSubmit)}>
             <ListItem>
-                <TextField
-                    name='search'
-                    inputRef={register}
-                    variant='outlined'
-                    placeholder='Search user by name' />
+                <Tooltip
+                    title='Search by email address or user name'
+                    arrow
+                >
+                    <TextField
+                        name='search'
+                        inputRef={register}
+                        variant='outlined'
+                        placeholder='Search user' />
+                </Tooltip>
                 <IconButton type='submit'>
                     <SearchIcon color='primary' />
                 </IconButton>

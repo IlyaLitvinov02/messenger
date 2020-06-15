@@ -1,4 +1,4 @@
-import { getUsersByTerm } from './api';
+import { getUsersByName, getUsersByEmail } from './api';
 import { setError } from '../../reducers/errorReducer';
 
 
@@ -31,7 +31,9 @@ export const setSearchMode = searchMode => ({ type: SET_SEARCH_MODE, payload: { 
 
 export const searchUsers = term => async dispatch => {
     try {
-        const snapshot = await getUsersByTerm(term);
+        const snapshot = term.search(/.+@.+\..+/i) !== -1
+            ? await getUsersByEmail(term) 
+            : await getUsersByName(term);
         const results = [];
         snapshot.forEach(snapshotChild => {
             results.push(snapshotChild.val());
