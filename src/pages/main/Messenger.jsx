@@ -36,6 +36,9 @@ export const Messenger = () => {
                         classes={{
                             paper: classes.drawerPaper
                         }}
+                        ModalProps={{
+                            keepMounted: true
+                        }}
                     >
                         <div className={classes.drawerHeader}>
                             <SearchForm />

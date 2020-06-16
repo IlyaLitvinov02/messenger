@@ -14,7 +14,24 @@ import styles from '../../styles.module.css';
 import { sendMessage } from '../../reducer';
 import { useStyles } from './styles';
 import { useForm } from 'react-hook-form';
+import { setIsTyping } from '../../../channels/reducer';
+import { useEffect } from 'react';
+import { useCallback } from 'react';
 
+
+
+const useDebounce = (callback, delay) => {
+    const [value, setValue] = useState('');
+
+    useEffect(() => {
+        const timer = setTimeout(() => {
+            callback();
+        }, delay);
+        return () => clearTimeout(timer);
+    }, [value, delay, callback]);
+
+    return setValue;
+}
 
 
 export const ChatForm = () => {
@@ -22,11 +39,18 @@ export const ChatForm = () => {
     const isImageUploading = useSelector(state => state.chat.isImageUploading);
     const dispatch = useDispatch();
     const { chatId } = useParams();
-    const { register, handleSubmit, reset } = useForm();
-
+    const { register, handleSubmit, reset, watch, formState: { isSubmitting } } = useForm();
     const classes = useStyles();
-
     const [image, setImage] = useState(undefined);
+
+    const setUserIsTyping = useCallback(isTyping =>
+        dispatch(setIsTyping(chatId, companionId, isTyping)),
+        [chatId, companionId, dispatch]);
+
+    const debounce = useDebounce(() => {
+        setUserIsTyping(false);
+    }, 2000);
+
 
     const handleFileChange = ({ target }) => {
         const uploadFile = target.files[0];
@@ -36,14 +60,20 @@ export const ChatForm = () => {
 
     const onSubmit = async ({ message }) => {
         if (message || image) {
+            await setUserIsTyping(false);
             const result = await dispatch(sendMessage(chatId, companionId, message, image));
             reset(result);
-            setImage(undefined)
+            setImage(undefined);
         }
     }
 
     const handleKeyDown = event => {
-        if (event.ctrlKey && event.key === 'Enter') handleSubmit(onSubmit)();
+        if (!isSubmitting && event.ctrlKey && event.key === 'Enter') handleSubmit(onSubmit)();
+    }
+
+    const handleChange = () => {
+        setUserIsTyping(true);
+        debounce(watch('message'));
     }
 
     return (
@@ -57,6 +87,8 @@ export const ChatForm = () => {
                         rowsMax={3}
                         placeholder='Write a message...'
                         onKeyDown={handleKeyDown}
+                        onChange={handleChange}
+                        onBlur={() => setUserIsTyping(false)}
                     />
                     {image &&
                         <Chip label={image.name} onDelete={() => { setImage(undefined) }} />}

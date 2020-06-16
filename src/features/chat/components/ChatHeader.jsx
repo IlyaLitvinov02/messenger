@@ -10,7 +10,7 @@ const useStyles = makeStyles(theme => ({
 }));
 
 export const ChatHeader = () => {
-    const { photoURL, name } = useSelector(state => state.chat.currentChat);
+    const { photoURL, name, isCompanionTyping } = useSelector(state => state.chat.currentChat);
 
     const classes = useStyles();
 
@@ -21,9 +21,12 @@ export const ChatHeader = () => {
                     <ListItemAvatar>
                         <Avatar src={photoURL} />
                     </ListItemAvatar>
-                    <ListItemText classes={{
-                        root: classes.itemText
-                    }}>{name}</ListItemText>
+                    <ListItemText
+                        primary={name}
+                        secondary={isCompanionTyping && 'typing...'}
+                        classes={{
+                            root: classes.itemText
+                        }}/>
                 </ListItem>
             }
         </>

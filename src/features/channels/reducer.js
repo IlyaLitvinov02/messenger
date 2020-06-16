@@ -29,7 +29,6 @@ export const createChat = (firstUser, secondUser) => dispatch => {
     } catch (error) {
         dispatch(setError(error.message));
     }
-
 }
 
 export const subscribeOnChats = () => dispatch => {
@@ -62,3 +61,6 @@ export const increaseNewMessagesCount = (chatId, receiverId) => dispatch => {
 export const resetNewMessagesCount = chatId => dispatch => {
     chatsAPI.resetNewMessagesCount(chatId);
 }
+
+export const setIsTyping = (chatId, receiverId, isTyping) =>
+    dispatch => chatsAPI.setIsTyping(chatId, receiverId, isTyping);

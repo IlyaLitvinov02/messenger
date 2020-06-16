@@ -81,6 +81,7 @@ export const ChannelsList = () => {
                             chatId={channel.chatId}
                             photoURL={channel.photoURL}
                             lastMessage={channel.lastMessage}
+                            isTyping={channel.isCompanionTyping}
                             newMessagesCount={channel.newMessagesCount}
                             name={channel.name} />
                     </NavLink>

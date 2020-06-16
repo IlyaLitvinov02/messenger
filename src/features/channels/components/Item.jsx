@@ -19,6 +19,7 @@ export const Item = ({
     email,
     newMessagesCount,
     name,
+    isTyping,
     onClick
 }) => <ListItem>
         <ListItemAvatar>
@@ -26,12 +27,16 @@ export const Item = ({
         </ListItemAvatar>
         <ListItemText
             primary={name}
-            secondary={lastMessage ? lastMessage.substring(0, 20) : email} />
+            secondary={
+                isTyping
+                    ? 'typing...'
+                    : lastMessage
+                        ? lastMessage.substring(0, 20)
+                        : email}
+        />
         {newMessagesCount
-            ?
-            <Badge badgeContent={newMessagesCount} color='secondary' />
-            :
-            !chatId
+            ? <Badge badgeContent={newMessagesCount} color='secondary' />
+            : !chatId
             &&
             <ListItemSecondaryAction>
                 <Fab size='small' onClick={onClick}>

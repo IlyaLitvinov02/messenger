@@ -85,5 +85,13 @@ export const chatsAPI = {
         database
             .ref(`users/${currentUserId}/chats/${chatId}/newMessagesCount`)
             .set(0);
+    },
+
+    setIsTyping(chatId, receiverId, isTyping) {
+        const database = firebase.database();
+
+        return database
+            .ref(`users/${receiverId}/chats/${chatId}/isCompanionTyping`)
+            .set(isTyping);
     }
 }
