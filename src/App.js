@@ -13,7 +13,6 @@ import { Signup } from './pages/Signup';
 import { setError } from './reducers/errorReducer';
 
 
-
 const Alert = props => <MuiAlert elevation={6} variant="filled" {...props} />
 
 
@@ -33,7 +32,7 @@ export const App = () => {
         isAuth
     } = useSelector(state => state.auth)
     const dispatch = useDispatch();
-
+    
     useEffect(() => {
         dispatch(onAuthStateChanged());
     }, [dispatch]);

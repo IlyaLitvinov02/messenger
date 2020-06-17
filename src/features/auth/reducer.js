@@ -1,6 +1,7 @@
 import { authAPI, updateUserInfo } from "./api/auth";
 import { setError } from '../../reducers/errorReducer';
 import { uploadUserPhoto } from "./api/storage";
+import { getToken } from "../notification/thunks";
 
 
 
@@ -96,6 +97,7 @@ export const onAuthStateChanged = () => dispatch => {
                     uid
                 }));
                 dispatch(setIsAuth(true));
+                dispatch(getToken());
             }
         });
     } catch (error) {
