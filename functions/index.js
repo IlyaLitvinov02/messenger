@@ -2,12 +2,7 @@ const functions = require('firebase-functions');
 
 const admin = require('firebase-admin');
 admin.initializeApp(functions.config().firebase);
-// // Create and Deploy Your First Cloud Functions
-// // https://firebase.google.com/docs/functions/write-firebase-functions
-//
-// exports.helloWorld = functions.https.onRequest((request, response) => {
-//  response.send("Hello from Firebase!");
-// });
+
 
 
 exports.sendNotification =
@@ -15,9 +10,17 @@ exports.sendNotification =
         .ref('users/{userId}/messages/{chatId}/{messageId}')
         .onWrite(async (snapshot, context) => {
 
-            const { body, senderId } = snapshot.after.val();
+            const { body, senderId, imageUrl } = snapshot.after.val();
             const { userId, chatId } = context.params;
             if (userId === senderId) return;
+
+            const messageBody =
+                body
+                    ? body.blocks
+                        .map(block => block.text !== undefined ? block.text : '')
+                        .reduce((previousText, currentText) => previousText + ' ' + currentText)
+                    : undefined;
+
 
             const tokenSnap = await admin.database().ref(`users/${userId}/pushToken`).once('value');
             const token = tokenSnap.val();
@@ -30,7 +33,11 @@ exports.sendNotification =
                 "token": token,
                 "notification": {
                     "title": title,
-                    "body": body || "Photo",
+                    "body": messageBody
+                        ? messageBody
+                        : imageUrl
+                            ? "Photo"
+                            : "An empty message",
                 }
             }
 

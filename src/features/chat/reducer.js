@@ -36,19 +36,31 @@ export const setIsImageUploading = isImageUploading => ({ type: SET_IS_IMAGE_UPL
 
 export const sendMessage = (chatId, receiverId, messageBody, image) => async dispatch => {
     try {
+        const messageBodyText =
+            messageBody
+                ? messageBody.blocks
+                    .map(block => block.text !== undefined ? block.text : '')
+                    .reduce((previousText, currentText) => previousText + ' ' + currentText)
+                : undefined;
+
         if (image !== undefined) {
             dispatch(setIsImageUploading(true));
             const response = await uploadMessageImage(image, chatId);
             if (response.state === 'success') {
                 const imageUrl = await response.ref.getDownloadURL();
-                messagesAPI.addMessage(chatId, receiverId, messageBody, imageUrl);
+                const body = messageBodyText ? messageBody : null;
+                messagesAPI.addMessage(chatId, receiverId, body, imageUrl);
             }
             dispatch(setIsImageUploading(false))
         } else {
+            if (!messageBodyText) return;
             messagesAPI.addMessage(chatId, receiverId, messageBody);
         }
-        dispatch(increaseNewMessagesCount(chatId, receiverId))
-        dispatch(updateLastMessageAndTimestamp(chatId, receiverId, messageBody));
+
+        dispatch(increaseNewMessagesCount(chatId, receiverId));
+
+        const lastMessage = messageBodyText ? messageBodyText : image ? 'Photo' : null;
+        dispatch(updateLastMessageAndTimestamp(chatId, receiverId, lastMessage));
     } catch (error) {
         dispatch(setError(error.message));
     }

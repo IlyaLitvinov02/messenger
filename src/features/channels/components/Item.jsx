@@ -32,7 +32,8 @@ export const Item = ({
                     ? 'typing...'
                     : lastMessage
                         ? lastMessage.substring(0, 20)
-                        : email}
+                        : email
+            }
         />
         {newMessagesCount
             ? <Badge badgeContent={newMessagesCount} color='secondary' />

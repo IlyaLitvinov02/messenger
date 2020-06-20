@@ -2,6 +2,7 @@ import React from 'react';
 import { ListItemAvatar, ListItemText, Avatar } from '@material-ui/core';
 import styles from '../styles.module.css';
 import moment from "moment";
+import { Editor, convertFromRaw, EditorState } from 'draft-js';
 
 export const Message = ({
     avatarURL,
@@ -13,7 +14,13 @@ export const Message = ({
 
     const date = new Date(timestamp);
     const time = moment(date).format('LT');
-
+    const content = typeof body === "object"
+        ? convertFromRaw({
+            ...body,
+            entityMap: body.entityMap || {}
+        })
+        : undefined;
+    const editorState = content ? EditorState.createWithContent(content) : undefined;
 
     return <>
         <ListItemAvatar>
@@ -27,7 +34,10 @@ export const Message = ({
                     </div>
                 }
                 <div>
-                    {body}
+                    {editorState
+                        ? <Editor editorState={editorState} readOnly={true} />
+                        : body
+                    }
                 </div>
             </div>
             <div className={styles.messageTime}>

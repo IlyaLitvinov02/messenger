@@ -1,0 +1,7 @@
+.rteContainer {
+    width: 90%;
+    margin-right: 10px;
+    max-height: 56px;
+    overflow: auto;
+    font-family: sans-serif;
+}

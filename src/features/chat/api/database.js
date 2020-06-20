@@ -5,12 +5,12 @@ import 'firebase/auth';
 
 
 export const messagesAPI = {
-    addMessage: (chatId, receiverId, messageBody, imageUrl = null) => {
+    addMessage: (chatId, receiverId, messageBody = null, imageUrl = null) => {
         const database = firebase.database();
         const currentUserId = firebase.auth().currentUser.uid;
         const firstRef = database.ref(`users/${currentUserId}/messages/${chatId}`);
         const secondRef = database.ref(`users/${receiverId}/messages/${chatId}`);
-
+        
         const message = {
             body: messageBody,
             senderId: currentUserId,

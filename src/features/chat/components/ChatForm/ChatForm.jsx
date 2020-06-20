@@ -1,8 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { useParams } from 'react-router-dom';
 import {
-    TextareaAutosize,
     Toolbar,
     IconButton,
     Chip,
@@ -12,11 +11,9 @@ import SendIcon from '@material-ui/icons/Send';
 import AddPhotoIcon from '@material-ui/icons/AddPhotoAlternate';
 import styles from '../../styles.module.css';
 import { sendMessage } from '../../reducer';
-import { useStyles } from './styles';
-import { useForm } from 'react-hook-form';
 import { setIsTyping } from '../../../channels/reducer';
-import { useEffect } from 'react';
-import { useCallback } from 'react';
+import { RTEditor } from './RTEditor/RTEditor';
+import { EditorState, convertToRaw } from 'draft-js';
 
 
 
@@ -39,9 +36,10 @@ export const ChatForm = () => {
     const isImageUploading = useSelector(state => state.chat.isImageUploading);
     const dispatch = useDispatch();
     const { chatId } = useParams();
-    const { register, handleSubmit, reset, watch, formState: { isSubmitting } } = useForm();
-    const classes = useStyles();
     const [image, setImage] = useState(undefined);
+    const [editorState, setEditorState] = useState(EditorState.createEmpty());
+    const [newMessageBody, setNewMessageBody] = useState(undefined);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const setUserIsTyping = useCallback(isTyping =>
         dispatch(setIsTyping(chatId, companionId, isTyping)),
@@ -51,6 +49,11 @@ export const ChatForm = () => {
         setUserIsTyping(false);
     }, 2000);
 
+    const reset = () => {
+        setEditorState(EditorState.createEmpty());
+        if (newMessageBody) setNewMessageBody(undefined);
+        if (image) setImage(undefined);
+    }
 
     const handleFileChange = ({ target }) => {
         const uploadFile = target.files[0];
@@ -58,56 +61,54 @@ export const ChatForm = () => {
         setImage(image);
     }
 
-    const onSubmit = async ({ message }) => {
-        if (message || image) {
-            await setUserIsTyping(false);
-            const result = await dispatch(sendMessage(chatId, companionId, message, image));
-            reset(result);
-            setImage(undefined);
+    const handleSubmit = async () => {
+        if (!isSubmitting && (newMessageBody || image)) {
+            setIsSubmitting(true);
+            await dispatch(sendMessage(chatId, companionId, newMessageBody, image));
+            reset();
+            setUserIsTyping(false);
+            setIsSubmitting(false);
         }
     }
 
-    const handleKeyDown = event => {
-        if (!isSubmitting && event.ctrlKey && event.key === 'Enter') handleSubmit(onSubmit)();
+    const handleChange = newEditorState => {
+        setEditorState(newEditorState);
+        const value = convertToRaw(newEditorState.getCurrentContent());
+        debounce(value);
+        setNewMessageBody(value);
+        setUserIsTyping(true);
     }
 
-    const handleChange = () => {
-        setUserIsTyping(true);
-        debounce(watch('message'));
-    }
 
     return (
         <div className={styles.inputWrap}>
-            <form onSubmit={handleSubmit(onSubmit)}>
-                <Toolbar>
-                    <TextareaAutosize
-                        name='message'
-                        ref={register}
-                        className={classes.textarea}
-                        rowsMax={3}
-                        placeholder='Write a message...'
-                        onKeyDown={handleKeyDown}
-                        onChange={handleChange}
-                        onBlur={() => setUserIsTyping(false)}
-                    />
-                    {image &&
-                        <Chip label={image.name} onDelete={() => { setImage(undefined) }} />}
-                    <IconButton component='label'>
-                        <AddPhotoIcon />
-                        <input
-                            type="file"
-                            accept="image/*"
-                            style={{ display: 'none' }}
-                            onChange={handleFileChange} />
+            <Toolbar>
+                <RTEditor
+                    onChange={handleChange}
+                    onCtrlEnter={handleSubmit}
+                    onBlur={() => setUserIsTyping(false)}
+                    placeholder='Write a message...'
+                    editorState={editorState}
+                    setEditorState={setEditorState}
+                />
+                {image &&
+                    <Chip label={image.name} onDelete={() => { setImage(undefined) }} />
+                }
+                <IconButton component='label'>
+                    <AddPhotoIcon />
+                    <input
+                        type="file"
+                        accept="image/*"
+                        style={{ display: 'none' }}
+                        onChange={handleFileChange} />
+                </IconButton>
+                {isImageUploading
+                    ? <CircularProgress />
+                    : <IconButton onClick={handleSubmit}>
+                        <SendIcon />
                     </IconButton>
-                    {isImageUploading
-                        ? <CircularProgress />
-                        : <IconButton type='submit'>
-                            <SendIcon />
-                        </IconButton>
-                    }
-                </Toolbar>
-            </form>
+                }
+            </Toolbar>
         </div>
     );
 }

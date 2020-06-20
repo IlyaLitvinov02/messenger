@@ -60,10 +60,10 @@ export const chatsAPI = {
         const timestamp = Date.now()
 
         database.ref('users/').update({
-            [`${currentUserId}/chats/${chatId}/lastMessage`]: `You: ${messageBody ? messageBody : 'Photo'}`,
+            [`${currentUserId}/chats/${chatId}/lastMessage`]: `You: ${messageBody}`,
             [`${currentUserId}/chats/${chatId}/timestamp`]: timestamp,
 
-            [`${receiverId}/chats/${chatId}/lastMessage`]: messageBody || 'Photo',
+            [`${receiverId}/chats/${chatId}/lastMessage`]: messageBody,
             [`${receiverId}/chats/${chatId}/timestamp`]: timestamp
         });
     },
